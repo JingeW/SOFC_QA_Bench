@@ -1,136 +1,149 @@
 # SOFC AI Benchmark
 
-A **modular, reproducible benchmark framework** for evaluating how AI language models understand **Solid Oxide Fuel Cell (SOFC)** domain knowledge. Designed for scientific benchmarking and potential research publication.
+This project is a benchmark tool for checking how well AI models answer **Solid Oxide Fuel Cell (SOFC)** questions.
 
----
+It helps you:
+- run the same SOFC question set across multiple models,
+- keep all settings and outputs reproducible,
+- score closed-form questions automatically,
+- export results for human review.
 
-## Quick start
+## What This Is (In Plain Language)
 
-**Environment**
+Think of this repo as a repeatable test pipeline:
+1. You choose a dataset + prompt version + models in YAML files.
+2. The tool asks each model all benchmark questions.
+3. Raw outputs are saved exactly as returned.
+4. Outputs are parsed and scored (for TF / single choice / multi choice).
+5. You can export a review workbook for manual grading/comments.
+
+This is for **scientific benchmarking**, not for product deployment.
+
+## Who This Is For
+
+- Researchers running model comparisons on SOFC knowledge.
+- Students or engineers who want reproducible benchmark runs.
+- Anyone who wants a config-driven workflow (instead of ad-hoc scripts).
+
+## Before You Start
+
+### 1) Activate the Conda environment
 
 ```powershell
 conda activate SOFC
 ```
 
-Copy `.env.example` to `.env` and set `OPENAI_API_KEY` for real runs. Not needed for `parse` or dry runs.
+### 2) Set your API key safely
 
-**Commands**
+Copy `.env.example` to `.env`, then put your key in:
+
+```text
+OPENAI_API_KEY=your_new_key_here
+```
+
+Important:
+- `.env` is ignored by git and should never be committed.
+- If a key was ever exposed, rotate/revoke it in your OpenAI account.
+
+## How To Run (Step by Step)
+
+### Step 1: Check configs
+
+- `configs/run.yaml` controls dataset, prompt version, question types, and dry run.
+- `configs/models.yaml` defines model names/families/params.
+- `configs/prompts.yaml` points to prompt template locations.
+
+### Step 2: Run a benchmark
 
 ```powershell
-# Run benchmark (creates run folder under runs/)
 python -m sofc_bench.cli run --config configs/run.yaml
+```
 
-# Parse raw outputs and write metrics
+This creates a new folder under `runs/` with:
+- run snapshot config,
+- raw outputs,
+- rendered prompts.
+
+### Step 3: Parse and score outputs
+
+```powershell
 python -m sofc_bench.cli parse --run-dir runs/<run_id>
+```
 
-# Export all question types to Excel for human review
+This writes:
+- `parsed_outputs_*.jsonl`
+- `metrics/by_model.csv`
+- `metrics/by_question_type.csv`
+- `metrics/by_model_and_type.csv`
+
+### Step 4: Export to Excel for human review (optional)
+
+```powershell
 python -m sofc_bench.cli export --run-dir runs/<run_id>
+```
 
-# Compare accuracy across runs (default: all subdirs in runs/; run parse on each run first)
+This creates `human_review.xlsx`.
+
+### Step 5: Compare multiple runs
+
+```powershell
 python -m sofc_bench.cli compare
-# Or compare specific run dirs:
+```
+
+Or compare specific run folders:
+
+```powershell
 python -m sofc_bench.cli compare --run-dir runs/run1 runs/run2
 ```
 
-**Run folder naming**
+## How Run IDs Are Named
 
-Run directories are auto-named: `{model_name}_{prompt_version}_{sampling}_{replicate}` with optional `_dry` when `dry_run: true`. The third segment is temperature when the model uses it (e.g. `0.0`), or `1.0` (API default) when the model omits sampling (e.g. gpt-5). Example: `gpt-4.1-nano_v1_0.0_01`, `gpt-5.2_v2_1.0_01`, `..._01_dry`. Replicate numbers increment per (model name, prompt version, sampling); dry and non-dry runs are counted separately.
+Run folders are auto-named as:
 
----
+`{model_name}_{prompt_version}_{sampling}_{replicate}`
 
-## Design principles
+Examples:
+- `gpt-4.1-nano_v1_0.0_01`
+- `gpt-5.2_v2_1.0_01`
+- `gpt-4.1-mini_v4_0.0_02_dry`
 
-- **Scientific reproducibility**: Datasets, prompts, model configs, and results are versioned; each run is reproducible from saved artifacts.
-- **Separation of concerns**: Data (what is asked), Prompts (how), Models (who answers), Evaluation (how judged).
-- **Configuration-driven**: YAML configs and declarative definitions over ad-hoc scripts.
-- **MVP + YAGNI**: Implement only what is needed for a valid benchmark; no speculative features.
+Notes:
+- `_dry` is added when `dry_run: true`.
+- Replicate number increments automatically.
 
----
+## Project Structure (Quick Map)
 
-## Pipeline
-
-```
-Configs (run, models, prompts)
-      ↓
-Dataset (JSONL per question type)
-      ↓
-Prompt renderer (Jinja templates)
-      ↓
-Model adapters (OpenAI via Responses API, etc.)
-      ↓
-raw_outputs.jsonl
-      ↓
-Parse → parsed_outputs_<type>.jsonl, metrics/*.csv
-      ↓
-Export → human_review.xlsx (optional)
-```
-
----
-
-## Project structure
-
-```
+```text
 SOFC_QA_Bench/
 ├── README.md
-├── pyproject.toml
 ├── .env.example
-│
+├── .gitignore
 ├── configs/
-│   ├── run.yaml          # dataset_id, prompt_version, question_types, dry_run
-│   ├── models.yaml       # model list (family, name, params)
-│   ├── prompts.yaml      # template_dir, version_dir
-│   └── eval.yaml          # (reserved)
-│
 ├── data/qa_sets/<dataset_id>/
-│   ├── source.xlsx       # human-maintained master
-│   ├── manifest.yaml     # dataset metadata
-│   └── jsonl/            # tf, single_choice, multi_choice, open_ended.jsonl
-│
 ├── prompts/
-│   ├── templates/        # shared fallback (used when a version has no templates/ or empty)
-│   └── versions/<v>/     # e.g. v1 (meta only), v2 (meta + templates/ for COT etc.)
-│       ├── prompt_meta.yaml
-│       └── templates/   # optional: version-specific .jinja; if missing, fallback used
-│
 ├── src/sofc_bench/
-│   ├── core/             # dataset, prompt, runner, schemas
-│   ├── adapters/         # openai, (ollama, hf_local optional)
-│   ├── eval/             # parsing, metrics, aggregate, export
-│   └── utils/            # io (YAML, JSONL)
-│
-├── runs/<run_id>/        # e.g. gpt-4.1-nano_v1_0.0_01, gpt-5.2_v2_1.0_01
-│   ├── run_config_snapshot.yaml
-│   ├── raw_outputs.jsonl
-│   ├── parsed_outputs_tf.jsonl, _single_choice, _multi_choice, _open_ended.jsonl
-│   ├── metrics/          # by_model.csv, by_question_type.csv, by_model_and_type.csv
-│   ├── prompts_rendered/
-│   └── human_review.xlsx  # after export
-│
-└── analysis/             # notebooks, figures (optional)
+├── runs/                 # generated outputs (git-ignored)
+└── analysis/
 ```
 
----
+## What Gets Scored Automatically
 
-## Dataset and prompts
+- `tf`: accuracy
+- `single_choice`: accuracy
+- `multi_choice`: accuracy
+- `open_ended`: no automatic correctness score (human review recommended)
 
-- **Dataset**: Excel is the human-editable source; `dataset.py` converts to JSONL per type (tf, single_choice, multi_choice, open_ended). JSONL is the frozen input for runs.
-- **Prompts**: Jinja templates per question type; versions live under `prompts/versions/`. Output format is constrained (e.g. "Answer: TRUE/FALSE", "Answer: A").
-- **Models**: Declared in `models.yaml`; adapters (e.g. OpenAI) normalize to a shared interface.
+## Design Rules This Project Follows
 
----
+- Reproducibility first.
+- Separation of concerns (data, prompts, models, evaluation).
+- Configuration-driven workflow.
+- MVP and no speculative features.
 
-## Evaluation
-
-- **Parse**: Raw outputs → parsed answers; TF/SC/MC are scored (accuracy); open_ended is not auto-scored.
-- **Metrics**: Aggregation by model, by question type, and by model×type (CSV).
-- **Human review**: Export produces `human_review.xlsx` with one sheet per question type (ID, Question, Answer, GT/is_valid/is_correct for closed; Grade, Comments for open_ended).
-
----
-
-## Non-goals
+## Non-Goals
 
 - Automatic prompt optimization
-- Single composite score for ranking
-- Real-time inference or deployment
+- Single composite ranking score
+- Real-time serving/deployment
 - Replacing expert judgment
 
