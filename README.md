@@ -27,13 +27,34 @@ This is for **scientific benchmarking**, not for product deployment.
 
 ## Before You Start
 
-### 1) Activate the Conda environment
+### 1) Create and activate the Conda environment
+
+```powershell
+conda create -n SOFC python=3.11 -y
+conda activate SOFC
+```
+
+If you already have this environment, just run:
 
 ```powershell
 conda activate SOFC
 ```
 
-### 2) Set your API key safely
+### 2) Install dependencies for this project
+
+This repo defines Python dependencies in `pyproject.toml` (under `[project].dependencies`).
+
+Install from the project root:
+
+```powershell
+python -m pip install -e .
+```
+
+Note:
+- There is currently no `environment.yml` in this repo.
+- The recommended flow is: create the `SOFC` conda env, activate it, then install from `pyproject.toml`.
+
+### 3) Set your API key safely
 
 Copy `.env.example` to `.env`, then put your key in:
 
@@ -110,6 +131,9 @@ Examples:
 Notes:
 - `_dry` is added when `dry_run: true`.
 - Replicate number increments automatically.
+- The `{sampling}` segment records the model sampling value.
+- In most runs, `{sampling}` is the **temperature** (for example `0.0`).
+- For adapters that do not expose temperature, naming uses `1.0` (API default) for consistency.
 
 ## Project Structure (Quick Map)
 
@@ -125,6 +149,99 @@ SOFC_QA_Bench/
 ├── runs/                 # generated outputs (git-ignored)
 └── analysis/
 ```
+
+## Advanced Reference (For Experienced Users)
+
+This section keeps the deeper technical context from the original README for power users.
+
+### One-Block CLI Quick Reference
+
+```powershell
+# Run benchmark (creates run folder under runs/)
+python -m sofc_bench.cli run --config configs/run.yaml
+
+# Parse raw outputs and write metrics
+python -m sofc_bench.cli parse --run-dir runs/<run_id>
+
+# Export all question types to Excel for human review
+python -m sofc_bench.cli export --run-dir runs/<run_id>
+
+# Compare accuracy across runs (default: all subdirs in runs/; run parse on each run first)
+python -m sofc_bench.cli compare
+
+# Or compare specific run dirs:
+python -m sofc_bench.cli compare --run-dir runs/run1 runs/run2
+```
+
+### Full Pipeline
+
+```text
+Configs (run, models, prompts)
+      ↓
+Dataset (JSONL per question type)
+      ↓
+Prompt renderer (Jinja templates)
+      ↓
+Model adapters (OpenAI via Responses API, etc.)
+      ↓
+raw_outputs.jsonl
+      ↓
+Parse → parsed_outputs_<type>.jsonl, metrics/*.csv
+      ↓
+Export → human_review.xlsx (optional)
+```
+
+### Detailed Project Structure
+
+```text
+SOFC_QA_Bench/
+├── README.md
+├── pyproject.toml
+├── .env.example
+│
+├── configs/
+│   ├── run.yaml           # dataset_id, prompt_version, question_types, dry_run
+│   ├── models.yaml        # model list (family, name, params)
+│   ├── prompts.yaml       # template_dir, version_dir
+│   └── eval.yaml          # reserved
+│
+├── data/qa_sets/<dataset_id>/
+│   ├── source.xlsx        # human-maintained master
+│   ├── manifest.yaml      # dataset metadata
+│   └── jsonl/             # tf, single_choice, multi_choice, open_ended.jsonl
+│
+├── prompts/
+│   ├── templates/         # shared fallback when version templates are missing
+│   └── versions/<v>/
+│       ├── prompt_meta.yaml
+│       └── templates/     # optional version-specific .jinja files
+│
+├── src/sofc_bench/
+│   ├── core/              # dataset, prompt, runner, schemas
+│   ├── adapters/          # openai, optional local adapters
+│   ├── eval/              # parsing, metrics, aggregate, export
+│   └── utils/             # io (YAML, JSONL)
+│
+├── runs/<run_id>/
+│   ├── run_config_snapshot.yaml
+│   ├── raw_outputs.jsonl
+│   ├── parsed_outputs_tf.jsonl
+│   ├── parsed_outputs_single_choice.jsonl
+│   ├── parsed_outputs_multi_choice.jsonl
+│   ├── parsed_outputs_open_ended.jsonl
+│   ├── metrics/
+│   ├── prompts_rendered/
+│   └── human_review.xlsx
+│
+└── analysis/
+```
+
+### Dataset, Prompt, and Evaluation Notes
+
+- **Dataset**: Excel is the editable source; JSONL is the frozen benchmark input per type.
+- **Prompts**: Jinja templates are versioned under `prompts/versions/`; fallback templates are in `prompts/templates/`.
+- **Models**: Declared in `configs/models.yaml`; adapters map providers to a shared interface.
+- **Evaluation**: TF/SC/MC are auto-scored; open-ended is for human review and rubric-based grading.
 
 ## What Gets Scored Automatically
 
