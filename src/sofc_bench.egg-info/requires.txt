@@ -1,5 +1,0 @@
-openai>=1.0
-pyyaml
-jinja2
-python-dotenv
-openpyxl
