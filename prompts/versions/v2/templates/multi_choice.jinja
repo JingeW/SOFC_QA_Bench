@@ -1,0 +1,19 @@
+Question:
+{{ question }}
+
+Options:
+{% for letter in ['A', 'B', 'C', 'D'] -%}
+{%- if options and letter in options -%}
+{{ letter }}. {{ options[letter] }}
+{% endif -%}
+{% endfor %}
+
+Instructions:
+- Think step by step internally.
+- Do not show your reasoning.
+- Then generate your final answer based on your reasoning.
+- Select all correct options.
+- Put your final answer in the Answer section.
+
+Output Format:
+Answer: [Letters A-D, uppercase, sorted, no spaces, no delimiter. One line only. No explanation.]

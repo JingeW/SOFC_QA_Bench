@@ -1,0 +1,3 @@
+# Prompt config. Which version is used is set in run.yaml (prompt_version).
+# If prompts/versions/<version>/templates/ exists, those templates are used; else template_dir below.
+template_dir: prompts/templates  # fallback when a version has no templates/ subdir

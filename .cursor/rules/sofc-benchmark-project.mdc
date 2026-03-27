@@ -23,7 +23,7 @@ This project is a **scientific benchmark framework** for evaluating how AI langu
 
 ## Canonical Reference
 
-Treat `readme_sofc_ai_benchmark.md` as the source of truth for pipeline, folder structure, data workflow (Excel → JSONL), and Phase 1 completion criteria. When adding code, follow the module layout and responsibilities described there.
+Treat **README.md** as the source of truth for pipeline, folder structure, run naming, data workflow (Excel → JSONL), and CLI usage. When adding code, follow the module layout and responsibilities described there. Run folders are auto-named: `{model_name}_{prompt_version}_{temperature}_{replicate}` with optional `_dry`; do not add a manual `run_id` in config for the path.
 
 ## Conda Environment
 
@@ -34,6 +34,16 @@ conda activate SOFC
 ```
 
 When suggesting or executing terminal commands (e.g., running tests, scripts, or benchmarks), activate the SOFC env first so execution uses this project’s dependencies.
+
+## Windows / PowerShell
+
+This project is developed on **Windows**; use **PowerShell** syntax for all terminal commands.
+
+- **Chain commands**: Use `;` (e.g. `conda activate SOFC; python script.py`), not `&&`.
+- **Environment variables**: Use `$env:NAME = "value"` (e.g. `$env:PYTHONPATH = "src"`).
+- **Change directory**: Use `Set-Location "path"` or `cd "path"`; then separate next command with `;`.
+- **Paths**: Prefer quoted paths if they contain spaces (e.g. `"c:\path\to\project"`).
+- Avoid bash/cmd-only constructs (e.g. `2>nul`, `&&`, `export VAR=value`).
 
 ## Development Guidance
 

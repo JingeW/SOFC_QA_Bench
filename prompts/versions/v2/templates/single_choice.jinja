@@ -1,0 +1,19 @@
+Question:
+{{ question }}
+
+Options:
+{% for letter in ['A', 'B', 'C', 'D'] -%}
+{%- if options and letter in options -%}
+{{ letter }}. {{ options[letter] }}
+{% endif -%}
+{% endfor %}
+
+Instructions:
+- Think step by step internally.
+- Do not show your reasoning.
+- Then generate your final answer based on your reasoning.
+- Select the single best answer.
+- Put your final answer in the Answer section.
+
+Output Format:
+Answer: [One letter: A, B, C, or D. One line only. No explanation.]

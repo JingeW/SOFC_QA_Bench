@@ -1,0 +1,16 @@
+Question:
+{{ question }}
+
+Options:
+{% for letter in ['A', 'B', 'C', 'D'] -%}
+{%- if options and letter in options -%}
+{{ letter }}. {{ options[letter] }}
+{% endif -%}
+{% endfor %}
+
+Instructions:
+- Select all correct answers.
+- Put your answer in the Answer section.
+
+Output Format:
+Answer: [Letters A-D, uppercase, sorted, no spaces, no delimiter. One line only. No explanation.]

@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: sofc-bench
+Version: 0.1.0
+Summary: SOFC AI Benchmark framework
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: openai>=1.0
+Requires-Dist: pyyaml
+Requires-Dist: jinja2
+Requires-Dist: python-dotenv
+Requires-Dist: openpyxl
+
+# SOFC AI Benchmark
+
+See [readme_sofc_ai_benchmark.md](readme_sofc_ai_benchmark.md) for full project specification.

@@ -1,0 +1,22 @@
+# Prompt metadata for version v2 (implicit CoT)
+prompt_version: v2
+prompt_strategy: implicit_cot
+prompt_structure:
+  system: implicit
+  user: explicit
+notes: >
+  Implicit CoT only: "Think step by step internally" and "Do not show your reasoning."
+  No task-specific decomposition (e.g. "analyze each option")—reserved for a future Decomposition prompt version.
+  Output format remains strict (Answer: ...) for parsing.
+
+supported_question_types:
+  - tf
+  - single_choice
+  - multi_choice
+  - open_ended
+
+expected_output_format:
+  tf: "Exactly one line: Answer: TRUE or Answer: FALSE; no explanation"
+  single_choice: "Exactly one line: Answer: A (or B, C, D); no explanation"
+  multi_choice: "Exactly one line: Answer: <letters> (A-D, uppercase, sorted, no spaces); no explanation"
+  open_ended: "Answer: followed by clear, concise response; no meta-commentary"

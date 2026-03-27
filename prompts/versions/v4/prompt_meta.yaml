@@ -1,0 +1,23 @@
+# Prompt metadata for version v4 (prompt repetition, non-reasoning)
+# Based on Leviathan et al., "Prompt Repetition Improves Non-Reasoning LLMs" (arXiv:2512.14982)
+prompt_version: v4
+prompt_strategy: prompt_repetition
+prompt_structure:
+  system: implicit
+  user: explicit
+notes: >
+  The task content (question, and options for SC/MC) is repeated twice, then instructions and output
+  format appear once at the end. Improves non-reasoning LLM performance without changing output
+  format; parser unchanged (Answer: on one line). No CoT; use for non-reasoning models.
+
+supported_question_types:
+  - tf
+  - single_choice
+  - multi_choice
+  - open_ended
+
+expected_output_format:
+  tf: "Answer: TRUE or FALSE (one line only)"
+  single_choice: "Answer: A (or B, C, D) (one line only)"
+  multi_choice: "Answer: <letters A-D, uppercase, sorted, no spaces> (one line only)"
+  open_ended: "Answer: <response> (concise, ≤5 sentences)"

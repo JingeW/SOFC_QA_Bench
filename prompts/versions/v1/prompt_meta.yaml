@@ -1,0 +1,21 @@
+# Prompt metadata for version v1
+prompt_version: v1
+prompt_strategy: neutral_minimal
+prompt_structure:
+  system: implicit
+  user: explicit
+notes: >
+  System instructions are embedded in the prompt text.
+  Future versions may separate system and user prompts.
+
+supported_question_types:
+  - tf
+  - single_choice
+  - multi_choice
+  - open_ended
+
+expected_output_format:
+  tf: "Exactly one line: Answer: TRUE or Answer: FALSE; no extra words or explanation"
+  single_choice: "Exactly one line: Answer: A (or B, C, D); no explanation"
+  multi_choice: "Exactly one line: Answer: <letters> (subset of A-D, uppercase, sorted, no separators); no explanation"
+  open_ended: "Start with Answer: ; short paragraph; concise (e.g. <= 5 sentences or 120 words); no A/B/C/D selection, no Options:, no restating question"

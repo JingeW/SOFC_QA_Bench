@@ -1,0 +1,29 @@
+# Model definitions (used by runner). 4.1 and 5 families.
+models:
+  # 4.1 family — non-reasoning
+  - family: openai
+    name: gpt-4.1-nano
+    version: null
+    temperature: 0.0
+  - family: openai
+    name: gpt-4.1-mini
+    version: null
+    temperature: 0.0
+  - family: openai
+    name: gpt-4.1
+    version: null
+    temperature: 0.0
+
+  # 5 family — reasoning-optimized (Responses API: omit temperature/top_p)
+  - family: openai
+    name: gpt-5-nano
+    version: null
+    omit_sampling: true
+  - family: openai
+    name: gpt-5-mini
+    version: null
+    omit_sampling: true
+  - family: openai
+    name: gpt-5.2
+    version: null
+    omit_sampling: true

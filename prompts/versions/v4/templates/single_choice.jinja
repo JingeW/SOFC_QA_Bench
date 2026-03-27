@@ -1,0 +1,35 @@
+Question:
+{{ question }}
+
+Options:
+{% for letter in ['A', 'B', 'C', 'D'] -%}
+{%- if options and letter in options -%}
+{{ letter }}. {{ options[letter] }}
+{% endif -%}
+{% endfor %}
+
+Instructions:
+- Select the single best answer.
+- Put your answer in the Answer section.
+
+Output Format:
+Answer: [One letter: A, B, C, or D. One line only. No explanation.]
+
+Let me repeat that:
+
+Question:
+{{ question }}
+
+Options:
+{% for letter in ['A', 'B', 'C', 'D'] -%}
+{%- if options and letter in options -%}
+{{ letter }}. {{ options[letter] }}
+{% endif -%}
+{% endfor %}
+
+Instructions:
+- Select the single best answer.
+- Put your answer in the Answer section.
+
+Output Format:
+Answer: [One letter: A, B, C, or D. One line only. No explanation.]

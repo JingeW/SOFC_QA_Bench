@@ -1,0 +1,19 @@
+# Run configuration: one prompt version, selected question types.
+# Single run: set 'model' to one name from configs/models.yaml.
+# Batch run: set 'models' to 'all' or a list of names; one CLI call runs each model
+#   sequentially and does run → parse → export per run (no separate parse/export needed).
+# Run folder per run: {model}_{prompt_version}_{sampling}_{replicate} (append _dry if dry_run).
+dataset_id: sofc_v1
+prompt_version: v4
+dry_run: False
+# Single model (one run):
+# model: gpt-4.1-nano
+# Or run all models with one call (run → parse → export each):
+models: all
+# Or a subset:
+# models: [gpt-4.1-nano, gpt-4.1-mini, gpt-4.1, gpt-5-nano, gpt-5-mini, gpt-5.2]
+question_types:
+  - tf
+  - single_choice
+  - multi_choice
+  - open_ended

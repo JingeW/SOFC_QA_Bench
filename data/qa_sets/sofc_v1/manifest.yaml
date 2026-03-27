@@ -1,0 +1,44 @@
+# dataset metadata & schema
+dataset_id: sofc_v1
+description: "SOFC QA benchmark set v1 (TF, single-choice, multi-choice, open-ended)"
+source_excel: source.xlsx
+
+# Global defaults (can be overridden per sheet)
+columns:
+  id: ID
+  question: Question
+  gt: GT
+  comments: Comments
+
+sheets:
+  tf:
+    sheet_name: "TF"
+    question_type: tf
+    header_row: 2
+    columns:
+      gt: GT
+      comments: Comments
+
+  single_choice:
+    sheet_name: "SC"
+    question_type: single_choice
+    header_row: 2
+    columns:
+      gt: GT
+      comments: Comments
+
+  multi_choice:
+    sheet_name: "MC"
+    question_type: multi_choice
+    header_row: 2
+    columns:
+      gt: GT
+      comments: Comments
+
+  open_ended:
+    sheet_name: "OE"
+    question_type: open_ended
+    header_row: 2
+    columns:
+      gt: null
+      comments: "Human Eval"

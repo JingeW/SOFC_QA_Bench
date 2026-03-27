@@ -1,0 +1,21 @@
+# Prompt metadata for version v3 (explicit CoT)
+prompt_version: v3
+prompt_strategy: explicit_cot
+prompt_structure:
+  system: implicit
+  user: explicit
+notes: >
+  Explicit CoT: prompt includes a Reasoning section and an Answer section. Model fills both;
+  parser uses the Answer section (last line for TF/SC/MC) for scoring. Same question/options as v1/v2.
+
+supported_question_types:
+  - tf
+  - single_choice
+  - multi_choice
+  - open_ended
+
+expected_output_format:
+  tf: "Reasoning: <step-by-step> then Answer: TRUE or FALSE (one line)"
+  single_choice: "Reasoning: <step-by-step> then Answer: A (or B, C, D) (one line)"
+  multi_choice: "Reasoning: <step-by-step> then Answer: <letters> (one line)"
+  open_ended: "Reasoning: <step-by-step> then Answer: <response>"
